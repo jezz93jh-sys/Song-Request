@@ -9,114 +9,280 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: #f5f5f5;
+            box-sizing: border-box;
         }
-        #scrolling-text {
-            position: absolute;
-            top: 10%;
-            left: 0;
-            right: 0;
-            font-size: 24px;
+        
+        #main-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        #tap-text {
+            font-size: 48px;
             font-weight: bold;
             color: #FF6347;
-            white-space: nowrap;
-            overflow: hidden;
-            animation: scroll 10s linear infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: pulse 2s ease-in-out infinite alternate;
         }
-        @keyframes scroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
         }
+        
         .request-form {
             display: none;
-            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
         }
-        .response {
-            font-size: 30px;
-            margin-top: 30px;
-            color: #2e8b57;
+        
+        .form-step {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        
+        .form-step h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
         input {
-            margin: 10px 0;
-            padding: 8px;
-            font-size: 18px;
+            width: 100%;
+            max-width: 400px;
+            margin: 15px 0;
+            padding: 15px;
+            font-size: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
+        
+        input:focus {
+            outline: none;
+            border-color: #FF6347;
+        }
+        
         button {
-            padding: 10px 20px;
-            font-size: 18px;
-            margin-top: 10px;
+            padding: 15px 30px;
+            font-size: 20px;
+            margin: 20px 10px;
             background-color: #FF6347;
             color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            min-width: 120px;
         }
+        
         button:hover {
             background-color: #FF4500;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .response {
+            display: none;
+            font-size: 28px;
+            margin-top: 30px;
+            color: #2e8b57;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        
+        .back-button {
+            background-color: #666;
+            margin-top: 20px;
+        }
+        
+        .back-button:hover {
+            background-color: #555;
+        }
+
+        /* Landscape mobile optimizations */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            body {
+                padding: 10px;
+            }
+            
+            #tap-text {
+                font-size: 36px;
+            }
+            
+            .form-step {
+                padding: 20px;
+            }
+            
+            .form-step h2 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            input {
+                padding: 12px;
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            
+            button {
+                padding: 12px 25px;
+                font-size: 18px;
+                margin: 15px 8px;
+            }
+            
+            .response {
+                font-size: 24px;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="scrolling-text">Tap here to request song</div>
+    <div id="main-screen">
+        <div id="tap-text">Tap To Request Song</div>
+    </div>
    
     <div id="form-container" class="request-form">
-        <h2>Enter your song request</h2>
-        <div id="artist-container">
-            <input type="text" id="artist" placeholder="Artist Name" required>
-            <button onclick="nextInput('song')">Next</button>
+        <div id="artist-step" class="form-step">
+            <h2>Who's the artist?</h2>
+            <input type="text" id="artist" placeholder="Enter artist name" required>
+            <br>
+            <button onclick="nextStep()">Next</button>
+            <button onclick="goBack()" class="back-button">Back</button>
         </div>
-        <div id="song-container" style="display:none;">
-            <input type="text" id="song" placeholder="Song Name" required>
+        
+        <div id="song-step" class="form-step" style="display:none;">
+            <h2>What's the song?</h2>
+            <input type="text" id="song" placeholder="Enter song name" required>
+            <br>
             <button onclick="submitRequest()">Submit</button>
+            <button onclick="previousStep()" class="back-button">Back</button>
         </div>
     </div>
 
     <div id="response-container" class="response"></div>
 
     <script>
-        // Show the form when the user taps anywhere on the screen
-        document.body.addEventListener('click', function() {
-            if (document.getElementById("form-container").style.display === "none") {
-                document.getElementById("form-container").style.display = "block";
-            }
+        // Show the form when the main screen is tapped
+        document.getElementById('main-screen').addEventListener('click', function() {
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            // Focus on the artist input
+            setTimeout(() => {
+                document.getElementById('artist').focus();
+            }, 100);
         });
 
-        // Show the song input after the artist input
-        function nextInput(nextField) {
-            document.getElementById("artist-container").style.display = "none";
-            document.getElementById(nextField + "-container").style.display = "block";
+        // Move to song input step
+        function nextStep() {
+            const artist = document.getElementById('artist').value.trim();
+            if (!artist) {
+                alert('Please enter an artist name');
+                return;
+            }
+            
+            document.getElementById('artist-step').style.display = 'none';
+            document.getElementById('song-step').style.display = 'block';
+            
+            // Focus on the song input
+            setTimeout(() => {
+                document.getElementById('song').focus();
+            }, 100);
+        }
+
+        // Go back to previous step
+        function previousStep() {
+            document.getElementById('song-step').style.display = 'none';
+            document.getElementById('artist-step').style.display = 'block';
+        }
+
+        // Go back to main screen
+        function goBack() {
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'flex';
+            // Clear inputs
+            document.getElementById('artist').value = '';
+            document.getElementById('song').value = '';
         }
 
         // Handle the song request submission
         function submitRequest() {
-            var artist = document.getElementById("artist").value;
-            var song = document.getElementById("song").value;
+            const artist = document.getElementById('artist').value.trim();
+            const song = document.getElementById('song').value.trim();
 
-            // Array of funny responses
-            var funnyResponses = [
-                "Your suggestion is shit, not playing it.",
-                "Fuck off.",
-                "Sure, but only if I can play it on repeat.",
-                "Barbie Girl? Yeah, right.",
-                "Bahama Boys? Really?",
-                "Nice try, but no.",
-                "That song's a meme, not happening."
+            if (!song) {
+                alert('Please enter a song name');
+                return;
+            }
+
+            // Array of silly responses
+            const funnyResponses = [
+                "Your suggestion is terrible, not playing it! 😂",
+                "Nope, absolutely not! 🚫",
+                "Sure, but only if I can play it backwards! 🔄",
+                "That song? In your dreams! 💭",
+                "Nice try, but I have better taste! 🎵",
+                "Maybe in another lifetime! ⏰",
+                "That's a hard pass from me! ✋",
+                "I'd rather play silence! 🔇",
+                "My speakers refuse to play that! 🔊",
+                "Error 404: Good taste not found! 🤖"
             ];
 
             // Randomly select a response
-            var randomResponse = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+            const randomResponse = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
 
-            // Display the response
-            document.getElementById("response-container").innerText = randomResponse;
-            document.getElementById("response-container").style.display = "block";
-
-            // Hide the form
-            document.getElementById("form-container").style.display = "none";
+            // Display the response with the song info
+            document.getElementById('response-container').innerHTML = 
+                `<strong>${artist} - ${song}</strong><br><br>${randomResponse}<br><br>
+                <button onclick="startOver()" class="back-button">Make Another Request</button>`;
+            
+            // Show response and hide form
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('response-container').style.display = 'block';
         }
+
+        // Start over function
+        function startOver() {
+            document.getElementById('response-container').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'flex';
+            
+            // Reset form
+            document.getElementById('artist').value = '';
+            document.getElementById('song').value = '';
+            document.getElementById('artist-step').style.display = 'block';
+            document.getElementById('song-step').style.display = 'none';
+        }
+
+        // Allow Enter key to advance through form
+        document.getElementById('artist').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                nextStep();
+            }
+        });
+
+        document.getElementById('song').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitRequest();
+            }
+        });
     </script>
 </body>
 </html>
