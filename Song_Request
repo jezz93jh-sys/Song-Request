@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+        #scrolling-text {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            right: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6347;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: scroll 10s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .request-form {
+            display: none;
+            margin-top: 20px;
+        }
+        .response {
+            font-size: 30px;
+            margin-top: 30px;
+            color: #2e8b57;
+        }
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin-top: 10px;
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #FF4500;
+        }
+    </style>
+</head>
+<body>
+    <div id="scrolling-text">Tap here to request song</div>
+   
+    <div id="form-container" class="request-form">
+        <h2>Enter your song request</h2>
+        <div id="artist-container">
+            <input type="text" id="artist" placeholder="Artist Name" required>
+            <button onclick="nextInput('song')">Next</button>
+        </div>
+        <div id="song-container" style="display:none;">
+            <input type="text" id="song" placeholder="Song Name" required>
+            <button onclick="submitRequest()">Submit</button>
+        </div>
+    </div>
+
+    <div id="response-container" class="response"></div>
+
+    <script>
+        // Show the form when the user taps anywhere on the screen
+        document.body.addEventListener('click', function() {
+            if (document.getElementById("form-container").style.display === "none") {
+                document.getElementById("form-container").style.display = "block";
+            }
+        });
+
+        // Show the song input after the artist input
+        function nextInput(nextField) {
+            document.getElementById("artist-container").style.display = "none";
+            document.getElementById(nextField + "-container").style.display = "block";
+        }
+
+        // Handle the song request submission
+        function submitRequest() {
+            var artist = document.getElementById("artist").value;
+            var song = document.getElementById("song").value;
+
+            // Array of funny responses
+            var funnyResponses = [
+                "Your suggestion is shit, not playing it.",
+                "Fuck off.",
+                "Sure, but only if I can play it on repeat.",
+                "Barbie Girl? Yeah, right.",
+                "Bahama Boys? Really?",
+                "Nice try, but no.",
+                "That song's a meme, not happening."
+            ];
+
+            // Randomly select a response
+            var randomResponse = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+
+            // Display the response
+            document.getElementById("response-container").innerText = randomResponse;
+            document.getElementById("response-container").style.display = "block";
+
+            // Hide the form
+            document.getElementById("form-container").style.display = "none";
+        }
+    </script>
+</body>
+</html>
